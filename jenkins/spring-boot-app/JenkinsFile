@@ -14,13 +14,6 @@ pipeline {
         deleteDir()  // This will delete everything in the workspace
       }
    }
-stage('Clean Git Workspace') {
-  steps {
-    echo 'Cleaning untracked files'
-    sh 'git clean -fdx'  // Removes untracked files and directories
-  }
-}
-
 
     stage('Checkout') {
       steps {
@@ -28,6 +21,13 @@ stage('Clean Git Workspace') {
         git branch: 'master', url: 'https://github.com/Rekapost/java-maven-sonar-argocd-helm-k8s.git'
       }
     }
+
+stage('Clean Git Workspace') {
+  steps {
+    echo 'Cleaning untracked files'
+    sh 'git clean -fdx'  // Removes untracked files and directories
+  }
+}
     stage('Build and Test') {
       steps {
         sh 'ls -ltr'
