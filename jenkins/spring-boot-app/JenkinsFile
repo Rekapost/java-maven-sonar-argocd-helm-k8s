@@ -7,6 +7,14 @@ pipeline {
     }
   }
   stages {
+
+   stage('Clean Workspace') {
+     steps {
+        echo "Cleaning workspace"
+        deleteDir()  // This will delete everything in the workspace
+      }
+   }
+
     stage('Checkout') {
       steps {
         sh 'echo passed'
