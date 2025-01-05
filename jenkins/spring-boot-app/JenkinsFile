@@ -32,7 +32,7 @@ pipeline {
     }
     stage('Build and Push Docker Image') {
       environment {
-        DOCKER_IMAGE = "reka83/ultimate-cicd-pipeline:${BUILD_NUMBER}"
+        DOCKER_IMAGE = "ultimate-cicd-pipeline:${BUILD_NUMBER}"
         // DOCKERFILE_LOCATION = "blob/master/jenkins/spring-boot-app/Dockerfile"
         REGISTRY_CREDENTIALS = credentials('docker-cred')
       }
