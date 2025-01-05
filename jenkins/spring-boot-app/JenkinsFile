@@ -47,7 +47,7 @@ stage('Clean Git Workspace') {
     }
     stage('Build and Push Docker Image') {
       environment {
-        DOCKER_IMAGE = "ultimate-cicd-pipeline:${BUILD_NUMBER}"
+        DOCKER_IMAGE = "reka83/ultimate-cicd-pipeline:${BUILD_NUMBER}"
         // DOCKERFILE_LOCATION = "jenkins/spring-boot-app/Dockerfile"
         REGISTRY_CREDENTIALS = credentials('docker-cred')
       }
