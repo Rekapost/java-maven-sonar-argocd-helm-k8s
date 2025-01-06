@@ -2,23 +2,20 @@ pipeline {
   agent {
     docker {
       image 'abhishekf5/maven-abhishek-docker-agent:v1'
-      //sh 'sudo docker pull abhishekf5/maven-abhishek-docker-agent:v1'
-      args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
+      args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // Mount Docker socket for Docker-in-Docker
     }
   }
   stages {
-
- stage('Clean Workspace') {
-  steps {
-     echo "Cleaning workspace"
-     deleteDir()  // This will delete everything in the workspace
-     script {
-         // Ensure files are deleted, even if there were permission issues
-         sh 'rm -rf ./*'  // Forcefully clean the workspace folder
-     }
-   }
-}
-
+    stage('Clean Workspace') {
+      steps {
+        echo "Cleaning workspace"
+        deleteDir()  // This will delete everything in the workspace
+        script {
+          // Ensure files are deleted, even if there were permission issues
+          sh 'rm -rf ./*'  // Forcefully clean the workspace folder
+        }
+      }
+    }
 
     stage('Checkout') {
       steps {
@@ -38,58 +35,60 @@ pipeline {
 
     stage('Build and Test') {
       steps {
+        echo 'Listing files in the current directory'
         sh 'ls -ltr'
-        // build the project and create a JAR file
+        
+        // Build the project and create a JAR file
+        echo 'Building Maven project'
         sh 'cd jenkins/spring-boot-app && mvn clean package'
       }
     }
 
-    
     stage('Build and Push Docker Image') {
-    environment {
+      environment {
         DOCKER_IMAGE = "reka83/ultimate-cicd-pipeline:${BUILD_NUMBER}"
         REGISTRY_CREDENTIALS = credentials('docker-cred')
-    }
-    steps {
+      }
+      steps {
         script {
-            // Log in to Docker Hub securely
-            withCredentials([usernamePassword(credentialsId: 'docker-cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                sh '''
-                    echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USER --password-stdin
-                '''
-            }
-            
-            // Build the Docker image
-            sh 'cd jenkins/spring-boot-app && docker build -t ${DOCKER_IMAGE} .'
-            
-            // Push the image to Docker Hub
-            def dockerImage = docker.image("${DOCKER_IMAGE}")
-            docker.withRegistry('https://index.docker.io/v1/', 'docker-cred') {
-                dockerImage.push()
-            }
-        }
-    }
-}
+          // Log in to Docker Hub securely using the docker-cred credentials
+          withCredentials([usernamePassword(credentialsId: 'docker-cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
+            sh '''
+              echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USER --password-stdin
+            '''
+          }
 
+          // Build the Docker image from the project directory
+          sh 'cd jenkins/spring-boot-app && docker build -t ${DOCKER_IMAGE} .'
+
+          // Push the image to Docker Hub
+          def dockerImage = docker.image("${DOCKER_IMAGE}")
+          docker.withRegistry('https://index.docker.io/v1/', 'docker-cred') {
+            dockerImage.push()
+          }
+        }
+      }
+    }
 
     stage('Update Deployment File') {
-        environment {
-            GIT_REPO_NAME = "java-maven-sonar-argocd-helm-k8s"
-            GIT_USER_NAME = "Rekapost"
+      environment {
+        GIT_REPO_NAME = "java-maven-sonar-argocd-helm-k8s"
+        GIT_USER_NAME = "Rekapost"
+      }
+      steps {
+        withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+          echo 'Configuring Git credentials and updating deployment file'
+          sh '''
+            git config user.email "rekaharisri@gmail.com"
+            git config user.name "Rekapost"
+            BUILD_NUMBER=${BUILD_NUMBER}
+            sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" jenkins/spring-boot-app-manifests/deployment.yml
+            git add jenkins/spring-boot-app-manifests/deployment.yml
+            git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+            git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
+          '''
         }
-        steps {
-            withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
-                sh '''
-                    git config user.email "rekaharisri@gmail.com"
-                    git config user.name "Rekapost"
-                    BUILD_NUMBER=${BUILD_NUMBER}
-                    sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" jenkins/spring-boot-app-manifests/deployment.yml
-                    git add jenkins/spring-boot-app-manifests/deployment.yml
-                    git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
-                '''
-            }
-        }
+      }
     }
   }
 }
