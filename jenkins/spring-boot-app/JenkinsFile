@@ -2,7 +2,7 @@ pipeline {
   agent {
     docker {
       image 'abhishekf5/maven-abhishek-docker-agent:v1'
-      args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // Mount Docker socket for Docker-in-Docker
+      args '--user root -v /var/run/docker.sock:/var/run/docker.sock -v /c/Users/nreka/.jenkins/workspace:/workspace'  // Map Windows path to Unix path inside the container
     }
   }
   stages {
