@@ -1,12 +1,19 @@
 pipeline {
-  agent {
-    docker {
-      image 'abhishekf5/maven-abhishek-docker-agent:v1'
-      //args '--user root -v //var/run/docker.sock:/var/run/docker.sock -v //c/docker-workspace:/workspace'
-      args '--user root -v //var/run/docker.sock:/var/run/docker.sock -v //c/Users/nreka/.jenkins/workspace:/workspace'
-    }
-  }
+  agent any {
+    
   stages {
+stage('Run Docker') {
+            steps {
+                script {
+                    docker.image('abhishekf5/maven-abhishek-docker-agent:v1').inside(
+                        '--user root -v //var/run/docker.sock:/var/run/docker.sock -v //c/Users/nreka/.jenkins/workspace:/workspace'
+                    ) {
+                        // Inside this block, you can run commands in the container
+                        sh 'ls /workspace'  // Example: List contents of the workspace mounted to the container
+                    }
+                }
+            }
+        }
     stage('Clean Workspace') {
       steps {
         echo "Cleaning workspace"
