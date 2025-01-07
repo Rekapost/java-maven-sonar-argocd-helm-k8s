@@ -79,32 +79,32 @@ stage('Fix Permissions') {
         }
       }
     }
-    stage('Update Deployment File') {
-        environment {
-            GIT_REPO_NAME = "java-maven-sonar-argocd-helm-k8s"
-            GIT_USER_NAME = "Reka"
-        }
-        steps {
-            withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
-                sh '''
-                    git config user.email "rekaharisri@gmail.com"
-                    git config user.name "Reka"
-                    // Ensure you are in the correct repository directory
-                    //cd ${WORKSPACE}/${GIT_REPO_NAME}
-                    // Get the current build number for replacement
-                    BUILD_NUMBER=${BUILD_NUMBER}
-                    // Use sed to update the deployment file with the build number
-                    sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" jenkins/spring-boot-app-manifests/deployment.yml
-                    // Stage the changes for commit
-                    git add jenkins/spring-boot-app-manifests/deployment.yml
-                    // Commit the changes
-                    git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-                    // Push the changes back to the remote repository
-                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
-                    //git push https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git
-                '''
-            }
+   stage('Update Deployment File') {
+    environment {
+        GIT_REPO_NAME = "java-maven-sonar-argocd-helm-k8s"
+        GIT_USER_NAME = "Reka"
+    }
+    steps {
+        withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+            sh '''
+                git config user.email "rekaharisri@gmail.com"
+                git config user.name "Reka"
+                # Ensure you are in the correct repository directory
+                # cd ${WORKSPACE}/${GIT_REPO_NAME}
+                # Get the current build number for replacement
+                BUILD_NUMBER=${BUILD_NUMBER}
+                # Use sed to update the deployment file with the build number
+                sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" jenkins/spring-boot-app-manifests/deployment.yml
+                # Stage the changes for commit
+                git add jenkins/spring-boot-app-manifests/deployment.yml
+                # Commit the changes
+                git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                # Push the changes back to the remote repository
+                git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
+            '''
         }
     }
+}
+
   }
 }
