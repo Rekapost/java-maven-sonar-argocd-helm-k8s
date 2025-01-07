@@ -103,7 +103,11 @@ stage('Static Code Analysis') {
                 git commit -m "Update deployment image to version ${BUILD_NUMBER}"
                 # Push the changes back to the remote repository
                 git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:master
-            '''
+           else
+                echo "No changes to commit."
+            fi
+
+'''
         }
     }
 }
