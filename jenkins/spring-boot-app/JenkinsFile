@@ -10,7 +10,7 @@ pipeline {
     stage('Checkout') {
       steps {
         sh 'echo passed'
-        git branch: 'main', url: 'https://github.com/Rekapost/java-maven-sonar-argocd-helm-k8s.git'
+        git branch: 'master', url: 'https://github.com/Rekapost/java-maven-sonar-argocd-helm-k8s.git'
       }
     }
     stage('Build and Test') {
@@ -55,12 +55,12 @@ pipeline {
             withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                 sh '''
                     git config user.email "rekaharisri@gmail.com"
-                    git config user.name "Rekapost"
+                    git config user.name "Reka"
                     BUILD_NUMBER=${BUILD_NUMBER}
                     sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" jenkins/spring-boot-app-manifests/deployment.yml
                     git add jenkins/spring-boot-app-manifests/deployment.yml
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
                 '''
             }
         }
