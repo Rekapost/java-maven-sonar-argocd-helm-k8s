@@ -68,7 +68,7 @@ stage('Fix Permissions') {
       }
       steps {
         script {
-            //sh 'cd jenkins/spring-boot-app && docker build -t ${DOCKER_IMAGE} .'
+            sh 'cd jenkins/spring-boot-app && docker build -t ${DOCKER_IMAGE} .'
             // Building the Docker image with the specified Dockerfile
             //sh "cd ${WORKSPACE}/jenkins/spring-boot-app && docker build -t ${DOCKER_IMAGE} -f ${DOCKERFILE_LOCATION} ."
             // Pushing the Docker image to Docker Hub
