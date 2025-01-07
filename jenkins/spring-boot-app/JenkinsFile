@@ -87,8 +87,8 @@ stage('Fix Permissions') {
         steps {
             withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                 sh '''
-                    git config --global user.email "rekaharisri@gmail.com"
-                    git config --global user.name "Reka"
+                    git config user.email "rekaharisri@gmail.com"
+                    git config user.name "Reka"
                     // Ensure you are in the correct repository directory
                     //cd ${WORKSPACE}/${GIT_REPO_NAME}
                     // Get the current build number for replacement
