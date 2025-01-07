@@ -11,7 +11,8 @@ pipeline {
    stage('Clean Workspace') {
      steps {
         echo "Cleaning workspace"
-        sh 'rm -rf ${WORKSPACE}/jenkins/spring-boot-app/target/*'
+        sh 'cd jenkins/spring-boot-app && rm -rf target/*'
+        //sh 'rm -rf ${WORKSPACE}/jenkins/spring-boot-app/target/*'
         //deleteDir()  // This will delete everything in the workspace
       }
    }
@@ -19,7 +20,8 @@ pipeline {
 stage('Fix Permissions') {
   steps {
     echo 'Fixing permissions for Jenkins workspace files'
-    sh "chmod -R 777 ${WORKSPACE}/jenkins/spring-boot-app/target"
+    sh 'cd jenkins/spring-boot-app && chmod -R 777 target'
+    //sh "chmod -R 777 ${WORKSPACE}/jenkins/spring-boot-app/target"
   }
 }
 
@@ -33,9 +35,10 @@ stage('Fix Permissions') {
 stage('Clean Git Workspace') {
   steps {
     echo 'Cleaning untracked files'
-    sh "chmod -R 777 ${WORKSPACE}/jenkins/spring-boot-app/target"
-    sh 'rm -rf ${WORKSPACE}/jenkins/spring-boot-app/target/*'
-    sh 'git clean -fdx'  // Removes untracked files and directories
+    //sh 'rm -rf ${WORKSPACE}/jenkins/spring-boot-app/target/*'
+    //sh 'git clean -fdx'  // Removes untracked files and directories
+    sh 'cd jenkins/spring-boot-app && rm -rf target/*'
+    sh 'cd jenkins/spring-boot-app && git clean -fdx'
   }
 }
 
