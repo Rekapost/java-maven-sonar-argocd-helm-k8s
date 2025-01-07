@@ -11,9 +11,17 @@ pipeline {
    stage('Clean Workspace') {
      steps {
         echo "Cleaning workspace"
-        deleteDir()  // This will delete everything in the workspace
+        sh 'rm -rf ${WORKSPACE}/jenkins/spring-boot-app/target/*'
+        //deleteDir()  // This will delete everything in the workspace
       }
    }
+
+stage('Fix Permissions') {
+  steps {
+    echo 'Fixing permissions for Jenkins workspace files'
+    sh "chmod -R 777 ${WORKSPACE}/jenkins/spring-boot-app/target"
+  }
+}
 
     stage('Checkout') {
       steps {
