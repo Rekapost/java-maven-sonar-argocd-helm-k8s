@@ -7,12 +7,28 @@ pipeline {
     }
   }
   stages {
+
+   stage('Clean Workspace') {
+     steps {
+        echo "Cleaning workspace"
+        deleteDir()  // This will delete everything in the workspace
+      }
+   }
+
     stage('Checkout') {
       steps {
         sh 'echo passed'
         git branch: 'master', url: 'https://github.com/Rekapost/java-maven-sonar-argocd-helm-k8s.git'
       }
     }
+
+stage('Clean Git Workspace') {
+  steps {
+    echo 'Cleaning untracked files'
+    sh 'git clean -fdx'  // Removes untracked files and directories
+  }
+}
+
     stage('Build and Test') {
       steps {
         sh 'ls -ltr'
@@ -20,7 +36,18 @@ pipeline {
         sh 'cd jenkins/spring-boot-app && mvn clean package'
       }
     }
-  
+
+//stage('Static Code Analysis') {
+//      environment {
+ //       SONAR_URL = "http:44.202.207.224:9000/"
+//      }
+//      steps {
+//        withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+//         sh 'cd ${WORKSPACE}/jenkins/spring-boot-app && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+ //       }
+//      }
+//    }
+
     stage('Build and Push Docker Image') {
       environment {
         DOCKER_IMAGE = "reka83/ultimate-cicd-pipeline:${BUILD_NUMBER}"
@@ -51,7 +78,7 @@ pipeline {
                     git config --global user.email "rekaharisri@gmail.com"
                     git config --global user.name "Reka"
                     // Ensure you are in the correct repository directory
-                    cd ${WORKSPACE}/${GIT_REPO_NAME}
+                    //cd ${WORKSPACE}/${GIT_REPO_NAME}
                     // Get the current build number for replacement
                     BUILD_NUMBER=${BUILD_NUMBER}
                     // Use sed to update the deployment file with the build number
@@ -61,8 +88,8 @@ pipeline {
                     // Commit the changes
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}"
                     // Push the changes back to the remote repository
-                    //git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
-                    git push https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git
+                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
+                    //git push https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git
                 '''
             }
         }
