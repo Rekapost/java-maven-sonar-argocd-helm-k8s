@@ -100,16 +100,16 @@ stage('Static Code Analysis') {
                # Ensure that target/ is not included in the commit
             git status  
            # Check if there are any changes to commit (excluding target/)
-            if [[ $(git status --porcelain) && ! $(git status --porcelain | grep 'target/') ]]; then
+           # if [[ $(git status --porcelain) && ! $(git status --porcelain | grep 'target/') ]]; then
                 # Stage the changes for commit
                 git add jenkins/spring-boot-app-manifests/deployment.yml
                 # Commit the changes
                 git commit -m "Update deployment image to version ${BUILD_NUMBER}"
                 # Push the changes back to the remote repository
                 git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:master
-           else
-                echo "No changes to commit."
-            fi
+          # else
+          #      echo "No changes to commit."
+          #  fi
 
 '''
         }
