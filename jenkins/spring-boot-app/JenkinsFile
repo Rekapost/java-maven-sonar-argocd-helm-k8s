@@ -97,6 +97,10 @@ stage('Static Code Analysis') {
                 BUILD_NUMBER=${BUILD_NUMBER}
                 # Use sed to update the deployment file with the build number
                 sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" jenkins/spring-boot-app-manifests/deployment.yml
+               # Ensure that target/ is not included in the commit
+            git status  
+           # Check if there are any changes to commit (excluding target/)
+            if [[ $(git status --porcelain) && ! $(git status --porcelain | grep 'target/') ]]; then
                 # Stage the changes for commit
                 git add jenkins/spring-boot-app-manifests/deployment.yml
                 # Commit the changes
