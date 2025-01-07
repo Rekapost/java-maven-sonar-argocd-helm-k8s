@@ -25,9 +25,12 @@ pipeline {
 stage('Clean Git Workspace') {
   steps {
     echo 'Cleaning untracked files'
+    sh "chmod -R 777 ${WORKSPACE}/jenkins/spring-boot-app/target"
+    sh 'rm -rf ${WORKSPACE}/jenkins/spring-boot-app/target/*'
     sh 'git clean -fdx'  // Removes untracked files and directories
   }
 }
+
 
     stage('Build and Test') {
       steps {
