@@ -33,10 +33,13 @@ Steps:
         $ java -jar target/spring-boot-web.jar --server.port=8081
         $ docker build -t ultimate-cicd-pipeline:v1 .
         $ docker run -d -p 8010:8080 -t ultimate-cicd-pipeline:v1
-        ![image](https://github.com/user-attachments/assets/ddf898c1-044f-4dfc-951a-82e0ba60a230)
+       
+   ![image](https://github.com/user-attachments/assets/0acd1e1c-dc79-4757-8814-2204551074f6)
+
         Stage 3: Run unit tests using JUnit and Mockito.
         Stage 4: Run SonarQube analysis to check the code quality.
-       ![image](https://github.com/user-attachments/assets/772acb93-9245-4c06-a910-c4601aa81646)
+         
+![image](https://github.com/user-attachments/assets/c51b3e07-2b40-448f-ae5e-6012b1800631)
 
         Stage 5: Package the application into a JAR file.
         $ mvn clean package
